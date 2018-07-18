@@ -1,0 +1,23 @@
+{
+  "name": "telos-client",
+  "version": "1.0.0",
+  "description": "An interactive TCP client for the Telos VX Prime phone system",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pwbrown/telos-client.git"
+  },
+  "author": "Philip Brown",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pwbrown/telos-client/issues"
+  },
+  "homepage": "https://github.com/pwbrown/telos-client#readme",
+  "dependencies": {
+    "lwcp": "^1.0.1",
+    "type-check": "^0.3.2"
+  }
+}
