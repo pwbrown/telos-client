@@ -3,4 +3,4 @@
  */
 
 /** EXPOSE THE CLIENT MODULE */
-module.exports = requrie('./lib/Client');
+module.exports = require('./lib/Client');
