@@ -72,9 +72,9 @@ lru-queue@0.1:
   dependencies:
     es5-ext "~0.10.2"
 
-lwcp@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/lwcp/-/lwcp-1.0.1.tgz#43c9c805226c1a3f119bb69fee6e24acdceea2ce"
+lwcp@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/lwcp/-/lwcp-1.0.2.tgz#1bb6e81bd9c2f3b745eaf48e1b458627e69fd75e"
 
 memoizee@^0.4.3:
   version "0.4.12"
