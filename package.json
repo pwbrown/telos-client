@@ -4,7 +4,7 @@
   "description": "An interactive TCP client for the Telos VX Prime phone system",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 0"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
