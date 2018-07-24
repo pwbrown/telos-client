@@ -176,17 +176,36 @@ console.log(studioSelected? "Studio selected": "Studio NOT selected");
 
 ### Flow without shortcut
 * Because almost every method requires you to be connected, authenticated, and have a studio selected, you will often see this repetitive flow of events.
-
-``` mermaid
-graph TD
-    A["client.connect()"] ==> B
-    B["client.login()"] ==> C
-    C["client.selectStudio()"] ==> D
-    D{Still connected?}
-    D -->|YES| E
-    D -->|NO| A
-    E["client.*()" //Execute some other method]
-    E --> D
+```
+  +----------------+
+  |client.connect()| <-------+
+  +----------------+         |
+          |                  |
+          |                  |
+          v                  |
+   +--------------+          |
+   |client.login()|          |
+   +--------------+          |
+          |                  |
+          |                  |
+          |                  |
++---------------------+      |
+|client.selectStudio()|      |
++---------------------+      |
+          |                  |
+          |                  |
+          v                  |
+  +----------------+         |
+  |Still Connected?+-----NO--+
+  +----------------+
+          |     ^
+         YES    |
+          |     |
+          |     |
+          v     |
++--------------------------------------+
+|client.*() //Execute some other method|
++--------------------------------------+
 ```
 
 ### Shortcut Method
@@ -204,14 +223,25 @@ console.log(initialized? "Ready to go" : "Something went wrong");
 
 ### Flow with shortcut
 
-``` mermaid
-graph TD
-    A["client.connectLoginSelect()"] ==> D
-    D{Still connected?}
-    D -->|YES| E
-    D -->|NO| A
-    E["client.*()" //Execute some other method]
-    E --> D
+```
++---------------------------+
+|client.connectLoginSelect()+<------+
++------------+--------------+       |
+             |                      |
+             |                      |
+             v                      |
+     +-------+--------+             |
+     |Still Connected?+-----NO------+
+     +----+-----------+
+          |     ^
+         YES    |
+          |     |
+          |     |
+          v     |
++--------------------------------------+
+|client.*() //Execute some other method|
++--------------------------------------+
+
 ```
 
 # Server Methods
