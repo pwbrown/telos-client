@@ -1,6 +1,6 @@
 {
   "name": "telos-client",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "An interactive TCP client for the Telos VX Prime phone system",
   "main": "index.js",
   "scripts": {
