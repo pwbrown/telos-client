@@ -13,6 +13,13 @@ An interactive TCP client abstraction for the Telos VX Prime phone server.
 * [Configuring the Client](#configuring-the-client)
     * [Using options](#via-options)
     * [Using methods](#via-methods)
+* [Console Logging](#console-logging)
+    * [Enabling Message Types](#enabling-console-message-types)
+* [Events](#events)
+    * ['studio'](#studio)
+    * ['line'](#line)
+    * ['book'](#book)
+    * ['im' (Instant Message)](#im)
 * [Getting Started](#getting-started)
     * [Connecting](#connecting)
     * [Logging In](#logging-in)
@@ -54,8 +61,6 @@ An interactive TCP client abstraction for the Telos VX Prime phone server.
         * [unlockLine](#ACTION:-unlockLine)
         * [holdLine](#ACTION:-holdLine)
         * [raiseLine](#ACTION:-raiseLine)
-    * [studio.book](#studio.book----studio-book-methods)
-    * [studio.log](#studio.log----studio-log-methods)
 
 
 # Overview
@@ -123,6 +128,71 @@ client.connect().then(async function(success){
 
 ### Set Password
     client.setPassword(password: String)
+
+# Console Logging
+Telos Client includes a logging system to optimize application building and debugging. There are various different message types that are used throughout the system and can be toggled with the "log" option when configuring the client.
+
+| Message Type 	| Color   	| Description                                                                                                                                                                                                                                                                          	| Aliases                               	|
+|--------------	|---------	|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	|---------------------------------------	|
+| error        	| red     	| Error messages are displayed whenever a fatal error occurs as a result of using the library incorrectly or passing an invalid message. Errors will not terminate the application so it is important to enable this option whenever developing to ensure that all errors are noticed. 	| error, errors, err                    	|
+| warning      	| orange  	| Warning messages are displayed whenever an error occurs that does not affect the performance of the client and are typically mitigated through the use of default values.                                                                                                            	| warning, warnings, warn               	|
+| trace        	| magenta 	| Trace messages are displayed in tandem with error messages if the end-user needs to see the stack trace leading to the error.  They will only display if the error type is also enabled.                                                                                             	| trace, stack, stack trace, stacktrace 	|
+| input        	| green   	| Input messages are displayed whenever TCP message is received by the client. Input messages are not parsed other than ignoring trailing or leading whitespace.                                                                                                                       	| input, in, request, req               	|
+| output       	| green   	| Output messages are displayed whenever a TCP message is sent by the client. Output messages are the actual representation of what is sent.                                                                                                                                           	| output, out, response, res            	|
+
+## Enabling console message types
+```Javascript
+const TelosClient = require('telos-client');
+const client = new TelosClient({
+    
+    // Enable message types by passing a ":" seperated string of any combination of message type aliases
+    log: "err:in:out"
+})
+```
+
+# Events
+The Telos VX system takes input from many different sources and thus changes frequently while being used.  For many methods that retrieve data, they are tracked and resolved internally as part of the Promise resolution flow.  For any other event triggered by the system, you will need to listen and track them using the events detailed below.
+
+## 'studio'
+Studio events are fired whenever a change within the studio has been made. Primarily these are called in response to changes of attributes within the studio such as setting the studio to the "busy all" state.
+
+```Javascript
+client.on('studio', (data) => {
+    // Analyze studio changes here
+})
+```
+
+## 'line'
+Line events are fired whenever a change is made to a studio line. These can occur from a change requested by the end-user or naturally by the making and receive of calls on the line.  This should be the application's primary way of reacting to changes within the system and staying up to date.
+**NOTE**: The "callerId" attribute may not be sent with the line event or the studio even. Be sure to manually [request callerId](#GET:-getCallerId) fields if they are not returned and desired.
+
+```Javascript
+client.on('line', (data) => {
+    // Analyze line changes here
+
+    // Line events will always include the additional "line" property
+    //   This indicates the number of the line that has triggered the event
+    console.log(`Line Number: ${data.line}`);
+})
+```
+
+## 'book'
+The book system is not thoroughly documented here as it has been untested. But if you decide to test the methods related to "studio.book", you can listen to the changes here.
+
+```Javascript
+client.on('book', (data) => {
+    // Analyze book changes here
+})
+```
+
+## 'im'
+Instant messages can be tracked within the selected studio using the 'im' event. Refer to the [im](#ACTION:-im) method for more details on sending messages. Keep in mind that you will only receive instant messages that have been sent within the studio that has been selected.
+
+```Javascript
+client.on('im', (data) => {
+    console.log(`A message has been sent from "${data.from}": ${data.message}`)
+})
+```
 
 # Getting Started
 
@@ -611,14 +681,22 @@ await client.seizeLine(3);
 #### --Purpose
 * Creates all call to the specified number and puts it on a hybrid or handset
 #### --Definition
-    callLine(lineId: Number) : Promise  NEEEEEEEED TOOOOOOO UPDATEEEEEE
+    callLine(lineId: Number) : Promise
 #### --Arguments
-| Property 	| Description                          	| Default 	| Type   	|
-|----------	|--------------------------------------	|---------	|--------	|
-| lineId   	| The number of the line to operate on 	|         	| Number 	|
+| Property         	| Description                                      	| Default 	| Type   	|
+|------------------	|--------------------------------------------------	|---------	|--------	|
+| lineId           	| The number of the line to operate on             	|         	| Number 	|
+| number           	| The remote number to call                        	|         	| String 	|
+| additionalConfig 	| Additional configuration settings detailed below 	|         	| Object 	|
+#### --additionalConfig - Definition
+| Property 	| Description                                                                               	| Default 	| Type    	| Required 	|
+|----------	|-------------------------------------------------------------------------------------------	|---------	|---------	|----------	|
+| handset  	| If true the hybrid option will be considered otherwise the port option will be considered 	|         	| Boolean 	| No       	|
+| hybrid   	| The identifier for which hybrid to use in the call                                        	|         	| Number  	| No       	|
+| port     	| The port to use in the call                                                               	|         	| Number  	| No       	|
 #### --Usage
 ```Javascript
-await client.callLine();
+await client.callLine(1,'18001231234');
 ```
 
 ***
@@ -626,11 +704,17 @@ await client.callLine();
 #### --Purpose
 * Takes the call on the specified line to the air on.
 #### --Definition
-    takeLine(lineId: Number) : Promise NEEEEED TOOOOO UPDATEEEEEE
+    takeLine(lineId: Number) : Promise
 #### --Arguments
-| Property 	| Description                          	| Default 	| Type   	|
-|----------	|--------------------------------------	|---------	|--------	|
-| lineId   	| The number of the line to operate on 	|         	| Number 	|
+| Property         	| Description                                      	| Default 	| Type   	|
+|------------------	|--------------------------------------------------	|---------	|--------	|
+| lineId           	| The number of the line to take                   	|         	| Number 	|
+| additionalConfig 	| Additional configuration settings detailed below 	|         	| Object 	|
+#### --additionalConfig - Definition
+| Property 	| Description                	| Default 	| Type    	| Required 	|
+|----------	|----------------------------	|---------	|---------	|----------	|
+| handset  	| Whether to use the handset 	|         	| Boolean 	| NO       	|
+| hybrid   	| The hybrid id to use       	|         	| Number  	| NO       	|
 #### --Usage
 ```Javascript
 await client.takeLine();
