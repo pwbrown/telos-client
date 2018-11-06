@@ -681,7 +681,7 @@ await client.seizeLine(3);
 #### --Purpose
 * Creates all call to the specified number and puts it on a hybrid or handset
 #### --Definition
-    callLine(lineId: Number) : Promise
+    callLine(lineId: Number, number: String [, additionalConfig: Object]) : Promise
 #### --Arguments
 | Property         	| Description                                      	| Default 	| Type   	|
 |------------------	|--------------------------------------------------	|---------	|--------	|
@@ -704,7 +704,7 @@ await client.callLine(1,'18001231234');
 #### --Purpose
 * Takes the call on the specified line to the air on.
 #### --Definition
-    takeLine(lineId: Number) : Promise
+    takeLine(lineId: Number [, additionalConfig: Object]) : Promise
 #### --Arguments
 | Property         	| Description                                      	| Default 	| Type   	|
 |------------------	|--------------------------------------------------	|---------	|--------	|
